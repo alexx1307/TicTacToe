@@ -72,7 +72,7 @@ class TicTacToe(pyglet.window.Window):
     def checkSequence(self, symbol, direction, pos):
         count = 0
         while True:
-            if self.grid.isInGrid(pos[0], pos[1]) and symbol == self.grid.cells[pos[0]][pos[1]].symbol:
+            if self.grid.isInGrid(pos[0], pos[1]) and symbol == self.grid.cells[pos[0]][pos[1]].owner:
                 pos[0] += direction[0]
                 pos[1] += direction[1]
                 count += 1
@@ -81,9 +81,9 @@ class TicTacToe(pyglet.window.Window):
 
     def isGameFinished(self, lastcell):
         symbol = lastcell.owner
-        verticalsum = self.checkSequence(symbol, [0, 1], [lastcell.x, lastcell.y]) + self.checkSequence(symbol, [0, -1], [lastcell.x, lastcell.y]) -1
-        print(verticalsum)
-        if verticalsum  >= self.winlen:
+        horizontalsum = self.checkSequence(symbol, [0, 1], [lastcell.col, lastcell.row]) + self.checkSequence(symbol, [0, -1], [lastcell.col, lastcell.row]) -1
+        print(horizontalsum)
+        if horizontalsum  >= self.winlen:
             return True
         return False
         
