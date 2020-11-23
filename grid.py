@@ -34,8 +34,7 @@ class Grid:
             for j in range(cols):
                 self.cells[i, j] = self.getInitialCell((self.x + self.cellWidth * j, self.y + self.cellHeight * i ), self.cellWidth, self.cellHeight, i, j)
     
-    def getInitialCell(self, position, cellWidth, cellHeight, row, col):
-        raise NotImplementedError()
+
 
     def draw(self):
         for i in range(self.rows):
