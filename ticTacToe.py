@@ -32,12 +32,13 @@ class TicTacToeGrid(Grid):
 
 
 class TicTacToe(pyglet.window.Window):
-    def __init__(self, rows, cols, players):
+    def __init__(self, rows, cols, players, winlen):
         super().__init__(800, 600)
         self.grid = TicTacToeGrid((50, 50), 500, 500, rows, cols)
         self.reset()
         self.players = players
         self.currentPlayerIndex = 0
+        self.winlen = winlen
 
     def getCurrentPlayer(self):
         return self.players[self.currentPlayerIndex]
@@ -56,9 +57,9 @@ class TicTacToe(pyglet.window.Window):
             cellClicked = self.grid.onClick(x, y)
             if cellClicked is not None and cellClicked.owner is None:
                 cellClicked.owner = self.getCurrentPlayer()
-                self.changeCurrentPlayer()
-                if self.isGameFinished():
+                if self.isGameFinished(cellClicked):
                     self.gameOver()
+                self.changeCurrentPlayer()
 
     def gameOver(self):
         self.canPlay = False
@@ -68,9 +69,24 @@ class TicTacToe(pyglet.window.Window):
     def resetAfterGameOver(self, dt):
         self.reset()
 
-    def isGameFinished(self):
-        pass
+    def checkSequence(self, symbol, direction, pos):
+        count = 0
+        while True:
+            if self.grid.isInGrid(pos[0], pos[1]) and symbol == self.grid.cells[pos[0]][pos[1]].symbol:
+                pos[0] += direction[0]
+                pos[1] += direction[1]
+                count += 1
+            else:
+                return count
 
+    def isGameFinished(self, lastcell):
+        symbol = lastcell.owner
+        verticalsum = self.checkSequence(symbol, [0, 1], [lastcell.x, lastcell.y]) + self.checkSequence(symbol, [0, -1], [lastcell.x, lastcell.y]) -1
+        print(verticalsum)
+        if verticalsum  >= self.winlen:
+            return True
+        return False
+        
     def on_draw(self):
         self.grid.draw()
 
@@ -78,6 +94,6 @@ class TicTacToe(pyglet.window.Window):
 name1 = input("podaj imie: ")
 name2 = input("podaj drugie imie: ")
 players = [Player(circleImg, name1), Player(crossImg, name2)]
-game = TicTacToe(3, 3, players)
+game = TicTacToe(3, 3, players, 3)
 
 pyglet.app.run()
