@@ -2,14 +2,17 @@ from grid import Grid, Cell
 import pyglet
 import numpy as np
 
+
 circleImg = pyglet.image.load('./assets/circle.png')
 crossImg = pyglet.image.load('./assets/cross.png')
 emptyImg = pyglet.image.load('./assets/empty.png')
+
 
 class TicTacToeCell(Cell):
     def __init__(self, position, width, height, row, col):
         super().__init__(emptyImg, position, width, height, row, col)
         self.owner = None
+
     def prepareToDraw(self):
         if self.owner is not None:   
             self.image = self.owner.img
@@ -27,6 +30,7 @@ class TicTacToeGrid(Grid):
     def getInitialCell(self, position, cellWidth, cellHeight, row, col):
         return TicTacToeCell(position, cellWidth, cellHeight, row, col)
 
+
 class TicTacToe(pyglet.window.Window):
     def __init__(self, rows, cols, reqLength):
         super().__init__(800, 600)
@@ -34,12 +38,14 @@ class TicTacToe(pyglet.window.Window):
         self.players = [Player(circleImg, 'CIRCLE'), Player(crossImg, 'CROSS')]
         self.reqLength = reqLength
         self.reset()
+        self.currentPlayerIndex = 0
 
     def getCurrentPlayer(self):
         return self.players[self.currentPlayerIndex]
 
-    def changeCurrentPlayerSymbol(self):
-        self.currentPlayerIndex = (self.currentPlayerIndex + 1) %2
+    def changeCurrentPlayer(self):
+        self.currentPlayerIndex = (
+            self.currentPlayerIndex + 1) % len(self.players)
 
     def reset(self):
         self.currentPlayerIndex = 0
@@ -47,7 +53,6 @@ class TicTacToe(pyglet.window.Window):
         for i in range(self.grid.rows):
             for j in range(self.grid.cols):
                 self.grid.cells[i, j].owner = None
-        
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.canPlay and button == pyglet.window.mouse.LEFT:
@@ -57,13 +62,13 @@ class TicTacToe(pyglet.window.Window):
                 if self.isGameFinished():
                    self.gameOver()
                 else:
-                    self.changeCurrentPlayerSymbol()
+                    self.changeCurrentPlayer()
 
     def gameOver(self):
         self.canPlay = False
         print(f'Wygral {self.getCurrentPlayer().symbol}')
         pyglet.clock.schedule_once(self.resetAfterGameOver, 2.0)
-    
+
     def resetAfterGameOver(self, dt):
         self.reset()
 
@@ -90,7 +95,6 @@ class TicTacToe(pyglet.window.Window):
     def on_draw(self):
         self.grid.draw()
     
-
 
 game = TicTacToe(10, 10, 5)
 
