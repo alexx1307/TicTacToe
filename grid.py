@@ -2,11 +2,11 @@ import pyglet
 import numpy as np
 
 
-class Cell(pyglet.sprite.Sprite):
-    def __init__(self, image, position, width, height, row, col):
-        super().__init__(image, *position)
-        self.cellWidth = width
-        self.cellHeight = height
+class Cell(pyglet.shapes.Rectangle):
+    def __init__(self, position, width, height, row, col):
+        super().__init__(x = position[0], y = position[1], width = width, height = height)
+        # self.cellWidth = width
+        # self.cellHeight = height
         self.row = row
         self.col = col
 
@@ -14,11 +14,12 @@ class Cell(pyglet.sprite.Sprite):
         self.prepareToDraw()
         super().draw()
 
-    def prepareToDraw(self):
-        self.scale_x = self.cellWidth / self.image.width
-        self.scale_y = self.cellHeight / self.image.height
+    # def prepareToDraw(self):
+    #     self.scale_x = self.cellWidth / self.image.width
+    #     self.scale_y = self.cellHeight / self.image.height
 
     def onClick(self):
+        #print(row, col)
         pass
 
 
@@ -36,6 +37,9 @@ class Grid:
             for j in range(cols):
                 self.cells[i, j] = self.getInitialCell(
                     (self.x + self.cellWidth * j, self.y + self.cellHeight * i), self.cellWidth, self.cellHeight, i, j)
+
+    def getInitialCell(self, position, width, height, row, col):
+        pass
 
     def draw(self):
         for i in range(self.rows):
