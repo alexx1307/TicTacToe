@@ -32,18 +32,18 @@ class Grid:
         self.cols = cols
         self.cellWidth = width//cols
         self.cellHeight = height//rows
-        self.cells = np.empty((rows, cols), dtype=Cell)
-        for i in range(rows):
-            for j in range(cols):
+        self.cells = np.empty((cols, rows), dtype=Cell)
+        for i in range(cols):
+            for j in range(rows):
                 self.cells[i, j] = self.getInitialCell(
-                    (self.x + self.cellWidth * j, self.y + self.cellHeight * i), self.cellWidth, self.cellHeight, i, j)
+                    (self.x + self.cellWidth * i, self.y + self.cellHeight * j), self.cellWidth, self.cellHeight, i, j)
 
-    def getInitialCell(self, position, width, height, row, col):
+    def getInitialCell(self, position, width, height, col, row):
         pass
 
     def draw(self):
-        for i in range(self.rows):
-            for j in range(self.cols):
+        for i in range(self.cols):
+            for j in range(self.rows):
                 self.cells[i, j].draw()
 
     def onClick(self, x, y):
