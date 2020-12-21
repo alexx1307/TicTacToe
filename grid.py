@@ -1,17 +1,26 @@
 import pyglet
 import numpy as np
 
+colors = {
+    "empty": (50, 50, 50),
+    "player_0": (255, 0, 0),
+    "player_1": (0, 255, 0)
+}
+
 
 class Cell(pyglet.shapes.Rectangle):
     def __init__(self, position, width, height, row, col):
-        super().__init__(x = position[0], y = position[1], width = width, height = height)
+        super().__init__(x=position[0],
+                         y=position[1], width=width, height=height)
         # self.cellWidth = width
         # self.cellHeight = height
         self.row = row
         self.col = col
+        self.type = 'empty'
 
     def draw(self):
-        self.prepareToDraw()
+        # self.prepareToDraw()
+        self.color = colors[self.type]
         super().draw()
 
     # def prepareToDraw(self):
@@ -39,7 +48,7 @@ class Grid:
                     (self.x + self.cellWidth * i, self.y + self.cellHeight * j), self.cellWidth, self.cellHeight, i, j)
 
     def getInitialCell(self, position, width, height, col, row):
-        pass
+        return Cell(position, width, height, row, col)
 
     def draw(self):
         for i in range(self.cols):
