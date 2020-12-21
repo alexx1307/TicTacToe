@@ -18,9 +18,6 @@ class SnakePlayer:
         self.segments = segments
         self.direction = direction
 
-    def updateStep(self):
-        pass
-
 class SnakePlayerSchema(Schema):
     direction = fields.Str()
     segments = fields.List(fields.Tuple((fields.Int(), fields.Int()) ))
@@ -39,10 +36,10 @@ class SnakeStateSchema(Schema):
 
 
 
-players = [SnakePlayer([(5,5), (4,5)], 'E'), SnakePlayer([(35,5), (36,5)], 'W')]
-state = SnakeState(players)
-encodedState = state.encode()
-print(encodedState, type(encodedState))
+# players = [SnakePlayer([(5,5), (4,5)], 'E'), SnakePlayer([(35,5), (36,5)], 'W')]
+# state = SnakeState(players)
+# encodedState = state.encode()
+# print(encodedState, type(encodedState))
 
-statePrim = SnakeState.decode(encodedState)
-print(statePrim)
+# statePrim = SnakeState.decode(encodedState)
+# print(statePrim)
