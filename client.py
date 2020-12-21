@@ -2,6 +2,7 @@ import socket
 import pyglet
 import snakeState
 import grid
+import threading
 
 PORT = 54321
 HOST = 'localhost'
@@ -18,18 +19,18 @@ class Game(pyglet.window.Window):
         self.play_area.draw()
 
     def runUpdatingFromServer(self):
-        len = int.from_bytes(sock.recv(4), byteorder='big')
-        data = sock.recv(len)
-        print(data)
-        state = snakeState.SnakeState.decode(data)
-        for row in self.play_area.cells:
-            for cell in row:
-                cell.type = 'empty'
-        for player in state.players:
-            for segment in player.segments:
-                self.play_area.cells[segment[0], segment[1]].type = "player_0"
-    def update(self, dt):
-        self.runUpdatingFromServer()
+        while True:
+            len = int.from_bytes(sock.recv(4), byteorder='big')
+            data = sock.recv(len)
+            print(data)
+            state = snakeState.SnakeState.decode(data)
+            for row in self.play_area.cells:
+                for cell in row:
+                    cell.type = 'empty'
+            for player in state.players:
+                for segment in player.segments:
+                    self.play_area.cells[segment[0], segment[1]].type = "player_0"
+    
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.W:
             sock.send('N'.encode())
@@ -42,10 +43,11 @@ class Game(pyglet.window.Window):
 
 
 
-
+def update(dt):
+    pass
 
 game = Game()
-#game.runUpdatingFromServer()
+threading.Thread(target=game.runUpdatingFromServer).start()
 
-pyglet.clock.schedule_interval(game.update, 1/2)
+pyglet.clock.schedule_interval(update, 1/2)
 pyglet.app.run()

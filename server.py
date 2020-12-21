@@ -12,12 +12,19 @@ players = [snakeState.SnakePlayer([(5, 5), (4, 5)], 'E')]
 clientConns = []
 
 sock.listen(len(players))
+
 print('waiting for players')
-for player in players:
+def handlePlayerAction(index, conn):
+    while True:
+        direction = conn.recv(1024).decode()
+        players[index].direction = direction
+
+for index, player in enumerate(players):
     conn, addr = sock.accept()
     print(f'{addr} connected')
     clientConns.append(conn)
-
+    thread = threading.Thread(target=handlePlayerAction, args=(index, conn))
+    thread.start()
 
 print('starting game')
 
@@ -44,13 +51,7 @@ def update(dt):
     # wyślij state klientom
 
 
-def playerActions(index):
-    while True:
-        direction = conn.recv(1024).decode()
-        players[index].direction = direction
 
-thread = threading.Thread(target=playerActions, args=(0))
-thread.start()
 
 pyglet.clock.schedule_interval(update, 1/2)
 pyglet.app.run()
