@@ -1,38 +1,36 @@
-import snakeState
+from snakeState import SnakePlayer, SnakeState
 import socket
 import pyglet
+import socket
 import threading
+import random
 
-PORT = 54321
+
+
+playersNumber = 1
 HOST = 'localhost'
-sock = socket.socket()
-sock.bind((HOST, PORT))
-players = [snakeState.SnakePlayer([(5, 5), (4, 5)], 'E')]
+PORT = 54321
+serverSock = socket.socket()
+serverSock.bind((HOST, PORT))
+serverSock.listen(playersNumber)
 
-clientConns = []
-
-sock.listen(len(players))
-
-print('waiting for players')
-def handlePlayerAction(index, conn):
+players = [SnakePlayer([(5,5), (4,5)], 'E')] #, SnakePlayer([(35,5), (36,5)], 'W')
+items = []
+def handlePlayerAction(index,conn):
     while True:
         direction = conn.recv(1024).decode()
         players[index].direction = direction
 
-for index, player in enumerate(players):
-    conn, addr = sock.accept()
-    print(f'{addr} connected')
-    clientConns.append(conn)
-    thread = threading.Thread(target=handlePlayerAction, args=(index, conn))
-    thread.start()
-
-print('starting game')
-
-
-def update(dt):
+print('Waiting for players')
+for i, player in enumerate(players):
+    conn, attr = serverSock.accept()
+    threading.Thread(target=handlePlayerAction, args = (i, conn)).start()
+print('Starting game')
+def update(dt):    
     for player in players:
-        new = ()
         head = player.segments[0]
+        new = None
+        eat = False
         if player.direction == 'N':
             new = (head[0], head[1]+1)
         if player.direction == 'S':
@@ -41,17 +39,25 @@ def update(dt):
             new = (head[0]-1, head[1])
         if player.direction == 'E':
             new = (head[0]+1, head[1])
+        for item in items:
+            type, x, y = item
+            if x == head[0] and y == head[1]:
+                eat = True
+                items.remove(item)
+                break
         player.segments.insert(0, new)
-        player.segments.pop()
-    state = snakeState.SnakeState(players)
-    for clientConn in clientConns:
-        msg = state.encode()
-        clientConn.send(len(msg).to_bytes(4, byteorder='big'))
-        clientConn.send(msg)
-    # wyślij state klientom
+        if eat == False:
+            player.segments.pop()
+    if items == []:
+        x = random.randint(0,49)
+        y = random.randint(0,49)
+        items.append(('apple', x, y))
 
+    state = SnakeState(players, items).encode()
+    print(f'{dt} sending state {state}')
+    conn.send(len(state).to_bytes(4, byteorder='big'))
+    conn.send(state)
+    #wyślij state klientom
 
-
-
-pyglet.clock.schedule_interval(update, 1/2)
+pyglet.clock.schedule_interval(update, 1/5)
 pyglet.app.run()

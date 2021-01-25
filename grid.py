@@ -1,12 +1,10 @@
 import pyglet
 import numpy as np
 
-colors = {
-    "empty": (50, 50, 50),
-    "player_0": (255, 0, 0),
-    "player_1": (0, 255, 0)
-}
-
+colors = {'empty':(30,30,30),
+          'player0':(255,0,0), 
+          'player1':(0,255,0), #(0,0,255),(255,255,0), (255,0,255), (0,255,255),
+          'apple':  (255,255,255)}
 
 class Cell(pyglet.shapes.Rectangle):
     def __init__(self, position, width, height, row, col):
@@ -23,9 +21,10 @@ class Cell(pyglet.shapes.Rectangle):
         self.color = colors[self.type]
         super().draw()
 
-    # def prepareToDraw(self):
-    #     self.scale_x = self.cellWidth / self.image.width
-    #     self.scale_y = self.cellHeight / self.image.height
+    def prepareToDraw(self):
+        self.color = colors[self.type]
+        # self.scale_x = self.cellWidth / self.image.width
+        # self.scale_y = self.cellHeight / self.image.height
 
     def onClick(self):
         #print(row, col)
@@ -50,7 +49,15 @@ class Grid:
     def getInitialCell(self, position, width, height, col, row):
         return Cell(position, width, height, row, col)
 
-    def draw(self):
+    def draw(self, state):
+        for row in self.cells:
+            for cell in row:
+                cell.type = 'empty'
+        for (i, player) in enumerate(state.players):
+            for segment in player.segments:
+                self.cells[segment[0], segment[1]].type = 'player'+str(i)
+        for type, x, y in state.items:
+            self.cells[x,y].type = type
         for i in range(self.cols):
             for j in range(self.rows):
                 self.cells[i, j].draw()
