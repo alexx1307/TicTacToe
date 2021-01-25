@@ -14,8 +14,16 @@ serverSock = socket.socket()
 serverSock.bind((HOST, PORT))
 serverSock.listen(playersNumber)
 
+<< << << < HEAD
 # , SnakePlayer([(35,5), (36,5)], 'W')
 players = [SnakePlayer([(5, 5), (4, 5)], 'E', True)]
+== == == =
+width = 50
+height = 50
+
+# , SnakePlayer([(35,5), (36,5)], 'W')
+players = [SnakePlayer([(5, 5), (4, 5)], 'E')]
+>>>>>> > 434cbf9d8253c5e7156415a5e5676aceece0414e
 items = []
 
 
@@ -56,6 +64,8 @@ def update(dt):
                 new = (head[0]-1, head[1])
             if player.direction == 'E':
                 new = (head[0]+1, head[1])
+            new[0] %= width
+            new[1] %= height
             for item in items:
                 type, x, y = item
                 if x == new[0] and y == new[1]:
