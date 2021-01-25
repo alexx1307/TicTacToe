@@ -1,10 +1,19 @@
 from marshmallow import fields, Schema, post_load
 import json
 
+
 class SnakeState:
     def __init__(self, players, items):
         self.players = players
         self.items = items
+
+    def getDeadPlayersNumber(self):
+        deadPlayersNumber = 0
+        for player in self.players:
+            if player.alive == False:
+                deadPlayersNumber += 1
+        return deadPlayersNumber
+
     def encode(self):
         return json.dumps(SnakeStateSchema().dump(self)).encode()
 
@@ -16,21 +25,26 @@ class SnakeState:
 
 
 class SnakePlayer:
-    def __init__(self, segments, direction):
+    def __init__(self, segments, direction, alive):
         self.segments = segments
         self.direction = direction
+        self.alive = alive
+
 
 class SnakePlayerSchema(Schema):
     direction = fields.Str()
-    segments = fields.List(fields.Tuple((fields.Int(), fields.Int()) ))
+    segments = fields.List(fields.Tuple((fields.Int(), fields.Int())))
+    alive = fields.Bool()
 
     @post_load
     def make_snakeplayer(self, data, **kwargs):
         return SnakePlayer(**data)
 
+
 class SnakeStateSchema(Schema):
     players = fields.List(fields.Nested(SnakePlayerSchema))
     items = fields.List(fields.Tuple((fields.Str, fields.Int, fields.Int)))
+
     @post_load
     def make_snakestate(self, data, **kwargs):
         return SnakeState(**data)
