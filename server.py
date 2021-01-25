@@ -14,6 +14,9 @@ serverSock = socket.socket()
 serverSock.bind((HOST, PORT))
 serverSock.listen(playersNumber)
 
+width = 50
+height = 50
+
 players = [SnakePlayer([(5,5), (4,5)], 'E')] #, SnakePlayer([(35,5), (36,5)], 'W')
 items = []
 def handlePlayerAction(index,conn):
@@ -39,9 +42,11 @@ def update(dt):
             new = (head[0]-1, head[1])
         if player.direction == 'E':
             new = (head[0]+1, head[1])
+        new[0] %= width
+        new[1] %= height
         for item in items:
             type, x, y = item
-            if x == head[0] and y == head[1]:
+            if x == new[0] and y == new[1]:
                 eat = True
                 items.remove(item)
                 break

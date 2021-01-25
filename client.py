@@ -6,8 +6,10 @@ from snakeState import SnakeState
 HOST = 'localhost'
 PORT = 54321
 
+print("start gry")
 sock = socket.socket()
 sock.connect((HOST, PORT))
+print("połączono z serwerem")
 
 
 class Game(pyglet.window.Window):
